@@ -9,7 +9,7 @@ class Question extends React.Component {
       guessed: false,
       guess: '',
     };
-
+    // this.handleGuess = this.handleGuess.bind(this)
     // convert all answers into a single array, and randomize the array
     this.answers = randomizeArray([
       ...props.question.incorrect_answers,
@@ -18,6 +18,7 @@ class Question extends React.Component {
   }
 
   handleGuess = (answer) => {
+    console.log(answer)
     // set guessed to true, and set guess to the selected answer
     this.setState({ guessed: true, guess: answer });
   };
@@ -35,10 +36,22 @@ class Question extends React.Component {
             <AnswerButton
               key={answer}
               answer={answer}
+              handleGuess= {() => this.handleGuess(answer)}
             />
           ))}
         </div>
-
+          {/* {this.state.guessed && (this.state.guess===this.props.question.correct_answer?<p>correct!</p>:<p>incorrect</p>)} */}
+          {this.state.guessed && (
+            <div>
+          {this.state.guess === this.props.question.correct_answer? (
+            <span className="text-success">Correct!</span>
+          ):
+          (
+            <span className="text-danger">Incorrect! the correct answer is {this.props.question.correct_answer}</span>
+          )
+          }
+            </div>
+          )}
         {/* Dynamically render correct/incorrect here! */}
       </div>
     );
