@@ -1,6 +1,6 @@
 import React from 'react';
-import { AnswerButton } from './';
 import { decodeHTML, randomizeArray } from '../lib';
+import { AnswerButton } from './';
 
 class Question extends React.Component {
   constructor(props) {
@@ -8,6 +8,7 @@ class Question extends React.Component {
     this.state = {
       guessed: false,
       guess: '',
+      correct: ""
     };
     // this.handleGuess = this.handleGuess.bind(this)
     // convert all answers into a single array, and randomize the array
@@ -17,10 +18,26 @@ class Question extends React.Component {
     ]);
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if (prevProps !== this.props){
+      this.answers = randomizeArray([
+        ...this.props.question.incorrect_answers,
+        this.props.question.correct_answer,
+      ]);
+      this.setState({guessed:false, guess: "", correct: ""})
+    }
+  }
+
   handleGuess = (answer) => {
-    console.log(answer)
     // set guessed to true, and set guess to the selected answer
     this.setState({ guessed: true, guess: answer });
+    console.log(answer)
+    if (answer === this.props.question.correct_answer){
+      this.setState({correct: true})
+    }else{
+      this.setState({correct:false})
+    }
+    
   };
 
   render() {
@@ -37,6 +54,8 @@ class Question extends React.Component {
               key={answer}
               answer={answer}
               handleGuess= {() => this.handleGuess(answer)}
+              correct={this.state.correct}
+              guess={this.state.guess}
             />
           ))}
         </div>
@@ -44,7 +63,7 @@ class Question extends React.Component {
           {this.state.guessed && (
             <div>
           {this.state.guess === this.props.question.correct_answer? (
-            <span className="text-success">Correct!</span>
+            <span className="text-success">Correct!</span> 
           ):
           (
             <span className="text-danger">Incorrect! the correct answer is {this.props.question.correct_answer}</span>

@@ -1,23 +1,33 @@
 import React, { Component } from 'react';
 import { Question } from './components';
-
-const category = '';
-const TRIVIA_API = `https://opentdb.com/api.php?amount=1&category=${category}&difficulty=easy`;
+import { categories } from './lib';
 
 class App extends Component {
-
+  
   constructor(){
     super()
     this.state = {
-      question: null
+      question: null,
+      category: '',
     }
   }
 
   componentDidMount(){
+    let TRIVIA_API = `https://opentdb.com/api.php?amount=10&category=${this.state.category}&difficulty=easy`
     fetch(TRIVIA_API)
     .then(response => response.json())
-    .then(data => this.setState({question: data.results[0]}))
+    .then(data => {this.setState({question: data.results})})
     .catch(error => console.log(error))
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    let TRIVIA_API = `https://opentdb.com/api.php?amount=10&category=${this.state.category}&difficulty=easy`
+    if (this.state.category !== prevState.category){
+      fetch(TRIVIA_API)
+      .then(response => response.json())
+      .then(data => {this.setState({question: data.results})})
+      .catch(error => console.log(error))
+    }
   }
 
   render() {
@@ -28,10 +38,23 @@ class App extends Component {
           (we couldn&lsquo;t think of a better name,{' '}
           <span className='fw-bolder'>sorry</span>)
         </h2>
+        <select onChange={(e) => this.setState({category : e.target.value})} >
+          {categories.map((category) => {
+            return (
+              
+            <option key={category.id} value={category.id}>{category.value}</option>
+            )
+          })}
+        </select>
         <hr />
         <div>
           {/* Render question here */}
-          {this.state.question && <Question question={this.state.question}/>}
+          {this.state.question && 
+            // console.log(this.state.question)
+            this.state.question.map(question => {
+              return <Question question={question}/>
+            })
+            }
         </div>
       </div>
     );
